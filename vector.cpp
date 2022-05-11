@@ -1,0 +1,3 @@
+class myVector {
+    int a;
+};

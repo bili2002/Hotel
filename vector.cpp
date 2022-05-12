@@ -1,3 +1,0 @@
-class myVector {
-    int a;
-};

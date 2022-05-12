@@ -72,7 +72,6 @@ class UnavailableRoom {
     myVector<char> customerName;
     myVector<char> note;
 
-    UnavailableTypes type;
 };
 
 class Room {

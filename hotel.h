@@ -1,63 +1,30 @@
 #include <stdexcept>
+#include <ctime>
 
 #include "vector.h"
-
-const int MonthsNumber = 12;
-const int Months[MonthsNumber] = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+#include "info.h"
 
 class Date {
     int day, month, year;
 
-    bool isLeapYear(int year) {
-        if (year % 400 == 0) 
-            return true;
-        if (year % 100 == 0) 
-            return false;
-        if (year % 4 == 0) 
-            return true;
-        return false;
-    }
+    bool isLeapYear() const;
+    static bool isLeapYear(int year);
+    static int daysIn(int month, int year);
+    int daysThisYear() const;
 
 public:
-    Date(int day, int month, int year) {
-        if (month < 1 || month > MonthsNumber) {
-            throw std::invalid_argument("Invalid date");
-        } 
+    Date(int day, int month, int year);
 
-        if (day < 1 || day > Months[month-1]) {
-            throw std::invalid_argument("Invalid date");
-        }
-        if (month == 2 && !isLeapYear(year) && day > Months[month-1] - 1) {
-            throw std::invalid_argument("Invalid date");
-        } 
+    bool operator==(const Date &oth) const;
+    bool operator<(const Date &oth) const;
+    bool operator<=(const Date &oth) const;
+    bool operator>(const Date &oth) const;
+    bool operator>=(const Date &oth) const;
+    
+    bool between(const Date &left, const Date &right) const;
+    int daysTo(const Date &oth) const;
 
-        this->day = day;
-        this->month = month;
-        this->year = year;
-    }
-
-    bool operator<(const Date &oth) {
-        if (year != oth.year) 
-            return year < oth.year;
-        if (month != oth.month) 
-            return month < oth.month;
-        return day < oth.day;
-    }
-    bool operator==(const Date &oth) {
-        if (day == oth.day && month == oth.month && year == oth.year) {
-            return true;
-        }
-        return false;
-    }
-    bool operator<=(const Date &oth) {
-        return *this < oth || *this == oth;
-    }
-    bool operator>(const Date &oth) {
-        return !(*this <= oth);
-    }
-    bool operator>=(const Date &oth) {
-        return !(*this < oth);
-    }
+    static Date getCurrentDate();
 };
 
 enum UnavailableTypes {
@@ -66,12 +33,19 @@ enum UnavailableTypes {
 };
 
 class UnavailableRoom {
+private:
     Date begin, end;
     int days;
 
     myVector<char> customerName;
     myVector<char> note;
 
+    UnavailableTypes type;
+
+public:
+    bool around(const Date &const) const;
+    Date getBeginDate() const;
+    Date getEndDate() const;
 };
 
 class Room {
@@ -79,9 +53,13 @@ class Room {
     int bedCount;
 
     myVector<UnavailableRoom> registrations;
-    
-    void registerRoom(const UnavailableRoom &reg); 
-    void isItBusy(const Date &date);
-    void freeRoom();
 
+    
+public:
+    void registerRoom(const UnavailableRoom &reg); 
+    bool isBusy(const Date &date);
+    bool isBusy(const Date &begin, const Date &end);
+    void freeRoom();
+    int busyInPeriod(const Date &begin, const Date &end);
+    void closeRoom(const UnavailableRoom &closing);
 };

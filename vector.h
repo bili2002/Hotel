@@ -1,6 +1,6 @@
 template<typename T>
 class myVector{
-    T* arr = nullptr;
+    T *arr = nullptr;
     int maxSize = 0;
     int currSize = 0;
 
@@ -61,5 +61,11 @@ public:
         return currSize;
     }
 
-
+    T *begin() {
+        return arr;
+    }
+    
+    T *end() {
+        return *arr[currSize];
+    }
 };

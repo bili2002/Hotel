@@ -5,6 +5,7 @@
 #include "info.h"
 
 class Date {
+private:
     int day, month, year;
 
     bool isLeapYear() const;
@@ -27,13 +28,14 @@ public:
     static Date getCurrentDate();
 };
 
-enum UnavailableTypes {
-    guest, 
-    construction
-};
 
 class UnavailableRoom {
 private:
+    enum UnavailableTypes {
+        guest, 
+        construction
+    };
+
     Date begin, end;
     int days;
 
@@ -43,23 +45,26 @@ private:
     UnavailableTypes type;
 
 public:
-    bool around(const Date &const) const;
+    bool aroundDate(const Date &date) const;
+    bool intersectWith(const UnavailableRoom &date) const;
     Date getBeginDate() const;
     Date getEndDate() const;
+
+    void freeEarlier(const Date &date);
 };
 
 class Room {
+private:
     int number;
     int bedCount;
 
-    myVector<UnavailableRoom> registrations;
+    myVector<UnavailableRoom> unavailable;
 
-    
 public:
     void registerRoom(const UnavailableRoom &reg); 
     bool isBusy(const Date &date);
     bool isBusy(const Date &begin, const Date &end);
-    void freeRoom();
     int busyInPeriod(const Date &begin, const Date &end);
     void closeRoom(const UnavailableRoom &closing);
+    void freeRoom();
 };

@@ -1,6 +1,5 @@
 #include "hotel.h"
 
-
 bool Date::isLeapYear(int year) {
     if (year % 400 == 0) 
         return true;
@@ -100,8 +99,14 @@ int Date::daysTo(const Date &oth) const {
     return count;
 }
 
-bool UnavailableRoom::around(const Date &oth) const{
-    if (oth >= this->begin && oth <= this->end) 
+bool UnavailableRoom::aroundDate(const Date &date) const {
+    if (date >= this->begin && date <= this->end) 
+        return true;
+    return false;
+}
+
+bool UnavailableRoom::intersectWith(const UnavailableRoom &date) const {
+    if (this->aroundDate(date.getBeginDate()) || this->aroundDate(date.getEndDate())) 
         return true;
     return false;
 }
@@ -113,14 +118,18 @@ Date UnavailableRoom::getEndDate() const {
     return end;
 }
 
+void UnavailableRoom::freeEarlier(const Date &date) {
+    end = date;
+}
+
 void Room::registerRoom(const UnavailableRoom &reg) {
-    registrations.push_back(reg);
+    unavailable.push_back(reg);
 }
 
 bool Room::isBusy(const Date &date) {
     bool busy = false;
-    for (auto curr : registrations) {
-        if (curr.around(date)) {
+    for (auto curr : unavailable) {
+        if (curr.aroundDate(date)) {
             busy = true;
             break;
         }
@@ -130,8 +139,8 @@ bool Room::isBusy(const Date &date) {
 
 bool Room::isBusy(const Date &begin, const Date &end) {
     bool busy = false;
-    for (auto curr : registrations) {
-        if (curr.around(begin) || curr.around(end)) {
+    for (auto curr : unavailable) {
+        if (curr.aroundDate(begin) || curr.aroundDate(end)) {
             busy = true;
             break;
         }
@@ -142,23 +151,37 @@ bool Room::isBusy(const Date &begin, const Date &end) {
 int Room::busyInPeriod(const Date &begin, const Date &end) {
     int count = 0;
 
-    for (auto curr : registrations) {
+    for (auto curr : unavailable) {
         Date tempBeg = curr.getBeginDate();
         Date tempEnd = curr.getEndDate();
 
-        if (begin < tempBeg && end.between(tempBeg, tempEnd)) {
-            count += tempBeg.daysTo(end);
+        if (begin < tempBeg && end >= tempBeg) {
+            count += tempBeg.daysTo(std::min(end, tempEnd));
+        } else if (begin.between(tempBeg, tempEnd)) {
+            count += begin.daysTo(std::min(end, tempEnd));
         }
     }
     return count;
 }
 
 void Room::closeRoom(const UnavailableRoom &closing) {
-
+    for (int i=0; i<unavailable.size(); i++) {
+        UnavailableRoom *curr = &unavailable[i];
+        if (curr->intersectWith(closing)) {
+            unavailable.erase(i);
+            i--;
+        }
+    }
+    unavailable.push_back(closing);
 }
 
 void Room::freeRoom() {
-
+    for (auto curr : unavailable) {
+        if (curr.aroundDate(Date::getCurrentDate())) {
+            curr.freeEarlier(Date::getCurrentDate());
+            break;
+        }
+    }
 }
 
 int main() {

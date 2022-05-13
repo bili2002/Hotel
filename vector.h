@@ -1,12 +1,13 @@
-template<typename T>
-class myVector{
-    T *arr = nullptr;
+template<typename Type>
+class myVector {
+private:
+    Type *arr = nullptr;
     int maxSize = 0;
     int currSize = 0;
 
     void expandVector() {
-        int newSize = maxSize != 0 ? maxSize*2 + 1;
-        T *temp = new T[newSize];
+        int newSize = maxSize != 0 ? maxSize*2 : 1;
+        Type *temp = new Type[newSize];
         for (int i=0; i<currSize; i++) {
             temp[i] = arr[i];
         }
@@ -17,55 +18,102 @@ class myVector{
     }
 
     void shrinkVector() {
-        T *temp = new int[maxSize/2];
+        Type *temp = new Type[maxSize/2];
         for (int i=0; i<currSize; i++) {
-            temp[i] = nums[i];
+            temp[i] = arr[i];
         }
 
-        delete[] nums;
-        nums = temp;
+        delete[] arr;
+        arr = temp;
         maxSize /= 2;
     }
 
+    static void swap(Type &left, Type &right) {
+        Type temp = left;
+        left = right;
+        right = temp;
+    }
+
 public:
-    myVector(int size, T var) {
+    myVector(int size, Type var) {
         int newSize = 1;
         while (newSize < size) {
             newSize *= 2;
         }
 
-        arr = new T[newSize];
+        arr = new Type[newSize];
         maxSize = newSize;
         currSize = size;
     } 
 
+    myVector(const myVector &oth) {
+        maxSize = oth.maxSize;
+        currSize = oth.currSize;
+
+        arr = new Type[maxSize];
+        for (int i=0; i<currSize; i++) {
+            arr[i] = oth.arr[i];
+        }
+    }
+
     ~myVector() {
         delete[] arr;
     }
+    
+    void operator=(const myVector &oth) {
+        maxSize = oth.maxSize;
+        currSize = oth.currSize;
 
-    void push_back(T var) {
+        arr = new Type[maxSize];
+        for (int i=0; i<currSize; i++) {
+            arr[i] = oth.arr[i];
+        }
+    }
+
+    Type operator[](int i) {
+        return arr[i];
+    }
+
+    void push_back(Type var) {
         if (currSize == maxSize) {
             expandVector();
         }
         arr[currSize++] = var;
     }
 
-    void pop_back(T var) {
+    void pop_back() {
         if (currSize == maxSize/2) {
             shrinkVector();
         }
         currSize--;
     }
 
+    void erase(int pos) {
+        for (int i=pos; i<currSize-1; i++) {
+            swap(arr[i], arr[i+1]);
+        }
+        pop_back();
+    }
+
     int size() {
         return currSize;
     }
 
-    T *begin() {
+    bool empty() {
+        return currSize == 0;
+    }
+
+    Type *begin() {
         return arr;
     }
     
-    T *end() {
-        return *arr[currSize];
+    Type *end() {
+        return arr + currSize;
+    }
+
+    void swap(myVector &oth) {
+        swap(maxSize, oth.maxSize);
+        swap(currSize, oth.currSize);
+        swap(arr, oth.arr);
     }
 };

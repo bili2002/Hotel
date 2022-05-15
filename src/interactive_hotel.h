@@ -26,13 +26,12 @@ private:
         exit = 10
     };
 
-    void doCommand(int command); 
-    int getCommand();
-    void printHelp();
-    void exitProgram();
+    void doCommand(int command); //извиква подходящата функцция за командата
+    int getCommand(); //взема команда
+    void printHelp(); //изписва възможните команди
+    void exitProgram(); //спира програмата
 
-    int getNumber();
-
+    int getNumber(); 
 public:
     void run(); 
 };

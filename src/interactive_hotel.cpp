@@ -1,17 +1,22 @@
 #include <iostream>
+#include <fstream>
 
 #include "interactive_hotel.h"
-#include "unavailable_room.h"
+#include "unavailable_period.h"
 
 void InteractiveHotel::printHelp() {
-    std::cout<<"Въведете 0 - за помощ;\n";
-    std::cout<<"Въведете 1 - за регистриране на гост;\n";
-    //to do
-    std::cout<<"Въведете 10 - даизключите програмата.\n";
+    std::cout<<"Enter 0 - for help;\n";
+    std::cout<<"Enter 1 - to register a guest;\n";
+    std::cout<<"Enter 2 - to find free rooms for a given date;\n";
+    std::cout<<"Enter 3 - to free a room today;\n";
+    std::cout<<"Enter 4 - for a usage report for a given period;\n";
+    std::cout<<"Enter 5 - to find the room with the fewest beds for a date;\n";
+    std::cout<<"Enter 6 - to close a room;\n";
+    std::cout<<"Enter 10 - to quit the program.\n";
 }
 
 void InteractiveHotel::registerGuestInputAndRun() {
-    hotel.registerGuestInRoom(getNumber(), UnavailableRoom::input());
+    hotel.registerGuestInRoom(getNumber(), UnavailablePeriod::input());
 }
 
 void InteractiveHotel::printFreeRoomsInputAndRun() {
@@ -31,7 +36,7 @@ void InteractiveHotel::findRoomInputAndRun() {
 }
 
 void InteractiveHotel::closeRoomInputAndRun() {
-    hotel.closeRoom(getNumber(), UnavailableRoom::input());
+    hotel.closeRoom(getNumber(), UnavailablePeriod::input());
 }
 
 void InteractiveHotel::doCommand(int command) {
@@ -63,18 +68,22 @@ void InteractiveHotel::doCommand(int command) {
         break;
     
     default:
-        std::cerr<<"Грешна команда!"<<'\n';
+        std::cerr<<"Invalid command!"<<'\n';
         break;
     }
 }
 
 int InteractiveHotel::getNumber() {
+    std::cout<<"Enter the number of the room:\n";
+
     int n;
     std::cin>>n;
     return n;
 }
 
 int InteractiveHotel::getCommand() {
+    std::cout<<"Enter command:\n";
+
     int n;
     std::cin>>n;
     return n;
@@ -85,7 +94,28 @@ void InteractiveHotel::exitProgram() {
 }
 
 void InteractiveHotel::run() {
+    printHelp();
+    std::ifstream in("Hotel.txt", std::ios::in);
+
+    if (!in.is_open()) {
+        std::cerr<<"Can't open file!\n";
+        return;
+    }
+
+    in>>hotel;
+    in.close();
+
     while (true) {
         doCommand(getCommand());
+
+        std::ofstream out("Hotel.txt", std::ios::out | std::ios::trunc); 
+        if (!out.is_open()) {
+            std::cerr<<"The file isn't opened!\n"<<std::endl;
+            return;
+        }
+
+        out<<hotel<<'\n';
+
+        out.close();
     }
 }

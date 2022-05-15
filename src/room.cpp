@@ -2,12 +2,13 @@
 #include <iostream>
 
 #include "room.h"
+#include "string.h"
 
-void Room::registerRoom(const UnavailableRoom& reg) {
+void Room::registerRoom(const UnavailablePeriod& reg) {
     bool intersecting = false;
     for (int i=0; i<unavailable.size(); i++) {
-        UnavailableRoom *curr = &unavailable[i];
-        if (curr->intersectWith(reg)) {
+        UnavailablePeriod &curr = unavailable[i];
+        if (curr.intersectWith(reg)) {
             intersecting = true;
         }
     }
@@ -15,8 +16,7 @@ void Room::registerRoom(const UnavailableRoom& reg) {
     if (!intersecting)
         unavailable.push_back(reg);
     else 
-        throw std::invalid_argument("Вече съществува регистрация в този период.");
-
+        throw std::invalid_argument("The room is already taken for the period.");
 }
 
 bool Room::isBusy(const Date& date) const {
@@ -57,9 +57,9 @@ int Room::busyInPeriod(const Date& begin, const Date& end) const {
     return count;
 }
 
-void Room::closeRoom(UnavailableRoom closing) {
+void Room::closeRoom(UnavailablePeriod closing) {
     for (int i=0; i<unavailable.size(); i++) {
-        UnavailableRoom& curr = unavailable[i];
+        UnavailablePeriod& curr = unavailable[i];
         if (curr.intersectWith(closing)) {
             if (curr.isConstruction()) {
                 closing.setBeginDate(std::min(closing.getBeginDate(), curr.getBeginDate()));
@@ -88,3 +88,30 @@ int Room::getNumber() const {
 int Room::getBedCount() const {
     return bedCount;
 };
+
+std::istream& operator>>(std::istream& in, Room &room) {
+    in>>room.number>>room.bedCount;
+
+    int n; 
+    in>>n;
+
+    room.unavailable.resize(n);
+    for (auto& curr : room.unavailable) {
+        in>>curr;
+    }
+
+    return in;
+}
+
+std::ostream& operator<<(std::ostream& out, const Room &room) {
+    out<<room.number<<' '<<room.bedCount<<' ';
+
+    int n = room.unavailable.size();
+    out<<n<<'\n';
+
+    for (auto& curr : room.unavailable) {
+        out<<curr<<'\n';
+    }
+
+    return out;
+}

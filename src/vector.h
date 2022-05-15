@@ -1,15 +1,15 @@
 #pragma once
 
-template<typename Type>
+template <typename Type>
 class MyVector {
 private:
-    Type *arr = nullptr;
+    Type* arr = nullptr;
     int maxSize = 0;
     int currSize = 0;
 
     void expandVector() {
         int newSize = maxSize != 0 ? maxSize*2 : 1;
-        Type *temp = new Type[newSize];
+        Type* temp = new Type[newSize];
         for (int i=0; i<currSize; i++) {
             temp[i] = arr[i];
         }
@@ -20,7 +20,7 @@ private:
     }
 
     void shrinkVector() {
-        Type *temp = new Type[maxSize/2];
+        Type* temp = new Type[maxSize/2];
         for (int i=0; i<currSize; i++) {
             temp[i] = arr[i];
         }
@@ -30,7 +30,7 @@ private:
         maxSize /= 2;
     }
 
-    static void swap(Type &left, Type &right) {
+    static void swap(Type& left, Type& right) {
         Type temp = left;
         left = right;
         right = temp;
@@ -43,7 +43,7 @@ public:
         currSize = 0;
     }
 
-    MyVector(int size, Type var) {
+    MyVector(int size) {
         int newSize = 1;
         while (newSize < size) {
             newSize *= 2;
@@ -54,7 +54,13 @@ public:
         currSize = size;
     } 
 
-    MyVector(const MyVector &oth) {
+    MyVector(int size, Type var) : MyVector(size) {
+        for (int i=0; i<size; i++) {
+            arr[i] = var;
+        }
+    }
+
+    MyVector(const MyVector& oth) {
         maxSize = oth.maxSize;
         currSize = oth.currSize;
 
@@ -68,7 +74,7 @@ public:
         delete[] arr;
     }
     
-    void operator=(const MyVector &oth) {
+    void operator=(const MyVector& oth) {
         maxSize = oth.maxSize;
         currSize = oth.currSize;
 
@@ -93,11 +99,14 @@ public:
         arr[currSize++] = var;
     }
 
-    void pop_back() {
+    Type pop_back() {
+        Type temp = arr[currSize - 1];
         if (currSize == maxSize/2) {
             shrinkVector();
         }
         currSize--;
+
+        return temp;
     }
 
     void erase(int pos) {
@@ -107,8 +116,19 @@ public:
         pop_back();
     }
 
-    int size() {
+    int size() const {
         return currSize;
+    }
+
+    void resize(int n) {
+        int newSize = 1;
+        while (newSize < n) {
+            newSize *= 2;
+        }
+
+        arr = new Type[newSize];
+        maxSize = newSize;
+        currSize = n;
     }
 
     bool empty() {
@@ -131,7 +151,7 @@ public:
         return arr + currSize;
     }
 
-    void swap(MyVector &oth) {
+    void swap(MyVector& oth) {
         swap(maxSize, oth.maxSize);
         swap(currSize, oth.currSize);
         swap(arr, oth.arr);

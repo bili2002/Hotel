@@ -4,18 +4,19 @@
 #include <cstring>
 
 #include "hotel.h"
+#include "string.h"
 
-Room &Hotel::findRoomWithNumber(int number) {
-    for (auto &room : rooms) {
+Room& Hotel::findRoomWithNumber(int number) {
+    for (auto& room : rooms) {
         if (room.getNumber() == number) {
             return room;
         }
     }
 
-    throw std::invalid_argument("Няма такава стая.");   
+    throw std::invalid_argument("No room with this number.\n");   
 }
 
-void Hotel::registerGuestInRoom(int number, const UnavailableRoom &reg) {
+void Hotel::registerGuestInRoom(int number, const UnavailablePeriod& reg) {
     Room room;
     try {
         room = findRoomWithNumber(number);
@@ -33,8 +34,8 @@ void Hotel::registerGuestInRoom(int number, const UnavailableRoom &reg) {
     }
 }
 
-void Hotel::printFreeRoomsForDate(const Date &date) {
-    for (auto &room : rooms) {
+void Hotel::printFreeRoomsForDate(const Date& date) {
+    for (auto& room : rooms) {
         if (!room.isBusy(date)) {
             std::cout<<room.getNumber()<<' ';
         }
@@ -55,9 +56,9 @@ void Hotel::freeRoom(int number) {
     room.freeRoom();
 }
 
-void Hotel::busyEnquiry(const Date &begin, const Date &end) {
+void Hotel::busyEnquiry(const Date& begin, const Date& end) {
     if (begin > end) {
-        std::cerr<<("Крайната дата е преди началната дата.")<<std::endl;
+        std::cerr<<("The end date is before the beginning one\n")<<std::endl;
         return;
     }
 
@@ -66,7 +67,7 @@ void Hotel::busyEnquiry(const Date &begin, const Date &end) {
     strcpy(filename, begin.toString());
 
     std::ofstream out("filename.txt", std::ios::out);
-    for (auto &room : rooms) {
+    for (auto& room : rooms) {
         int days = room.busyInPeriod(begin, end);
         if (days != 0) {
             out<<room.getNumber()<<' '<<days<<'\n';
@@ -74,9 +75,9 @@ void Hotel::busyEnquiry(const Date &begin, const Date &end) {
     }
 }
 
-void Hotel::findRoom(const Date &date) {
+void Hotel::findRoom(const Date& date) {
     int minBeds = -1, numberOfRoom = -1;
-    for (auto &room : rooms) {
+    for (auto& room : rooms) {
         if (!room.isBusy(date)) {
             if (minBeds > room.getBedCount() || minBeds == -1) {
                 minBeds = room.getBedCount();
@@ -86,14 +87,14 @@ void Hotel::findRoom(const Date &date) {
     }
     
     if (minBeds == -1) {
-        std::cout<<"Няма свободна стая."<<'\n';
+        std::cerr<<"No rooms left.\n";
     } else {
-        std::cout<<"Стаята е: "<<numberOfRoom<<"с "<<minBeds<<" легла.";
+        std::cout<<"The room is number "<<numberOfRoom<<" with "<<minBeds<<" beds.\n";
     }
 }
 
 
-void Hotel::closeRoom(int number, const UnavailableRoom &close) {
+void Hotel::closeRoom(int number, const UnavailablePeriod& close) {
     Room room;
     try {
         room = findRoomWithNumber(number);
@@ -104,4 +105,27 @@ void Hotel::closeRoom(int number, const UnavailableRoom &close) {
     }
 
     room.closeRoom(close);
+}
+
+std::istream& operator>>(std::istream& in, Hotel &hotel) {
+    int n;
+    in>>n;
+
+    hotel.rooms.resize(n);
+    for (auto& room : hotel.rooms) {
+        in>>room;
+    }
+    
+    return in;
+}
+
+std::ostream& operator<<(std::ostream& out, const Hotel &hotel) {
+    int n = hotel.rooms.size();
+    out<<n<<'\n';
+
+    for (auto room : hotel.rooms) {
+        out<<room<<'\n';
+    }
+
+    return out;
 }

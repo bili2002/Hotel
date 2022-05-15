@@ -1,5 +1,7 @@
+#pragma once
+
 template<typename Type>
-class myVector {
+class MyVector {
 private:
     Type *arr = nullptr;
     int maxSize = 0;
@@ -35,7 +37,13 @@ private:
     }
 
 public:
-    myVector(int size, Type var) {
+    MyVector() {
+        arr = nullptr;
+        maxSize = 0;
+        currSize = 0;
+    }
+
+    MyVector(int size, Type var) {
         int newSize = 1;
         while (newSize < size) {
             newSize *= 2;
@@ -46,7 +54,7 @@ public:
         currSize = size;
     } 
 
-    myVector(const myVector &oth) {
+    MyVector(const MyVector &oth) {
         maxSize = oth.maxSize;
         currSize = oth.currSize;
 
@@ -56,11 +64,11 @@ public:
         }
     }
 
-    ~myVector() {
+    ~MyVector() {
         delete[] arr;
     }
     
-    void operator=(const myVector &oth) {
+    void operator=(const MyVector &oth) {
         maxSize = oth.maxSize;
         currSize = oth.currSize;
 
@@ -70,7 +78,11 @@ public:
         }
     }
 
-    Type operator[](int i) {
+    Type& operator[](int i) {
+        return arr[i];
+    }
+
+    const Type& operator[](int i) const {
         return arr[i];
     }
 
@@ -103,15 +115,23 @@ public:
         return currSize == 0;
     }
 
-    Type *begin() {
+    Type* begin() {
         return arr;
     }
     
-    Type *end() {
+    Type* end() {
         return arr + currSize;
     }
 
-    void swap(myVector &oth) {
+    const Type* begin() const {
+        return arr;
+    }
+    
+    const Type* end() const{
+        return arr + currSize;
+    }
+
+    void swap(MyVector &oth) {
         swap(maxSize, oth.maxSize);
         swap(currSize, oth.currSize);
         swap(arr, oth.arr);

@@ -1,3 +1,5 @@
+#pragma once
+
 const int daysInYear = 365;
 
 const int MonthsNumber = 12;

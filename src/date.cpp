@@ -129,21 +129,17 @@ Date Date::getDate() {
     return temp;
 }
 
-char* Date::toString() const {
-    char* str = nullptr;
-
-    str += year / 1000 + '0';
-    str += (year / 100) % 10 + '0';
-    str += (year / 10) % 100 + '0';
-    str += year % 1000 + '0';
-    str += '-';
-    str += month / 10 + '0';
-    str += month % 10 + '0';
-    str += '-';
-    str += day / 10 + '0';
-    str += day % 10 + '0';
-
-    return str;
+void Date::toString(char str[]) const {
+    str[8] += year / 1000 + '0';
+    str[9] += (year / 100) % 10 + '0';
+    str[10] += (year / 10) % 100 + '0';
+    str[11] += year % 1000 + '0';
+    str[12] += '-';
+    str[13] += month / 10 + '0';
+    str[14] += month % 10 + '0';
+    str[15] += '-';
+    str[16] += day / 10 + '0';
+    str[17] += day % 10 + '0';
 }
 
 std::istream& operator>>(std::istream& in, Date &date) {

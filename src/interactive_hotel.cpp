@@ -16,27 +16,36 @@ void InteractiveHotel::printHelp() {
 }
 
 void InteractiveHotel::registerGuestInputAndRun() {
-    hotel.registerGuestInRoom(getNumber(), UnavailablePeriod::input());
+    int n = getNumber();
+    UnavailablePeriod UP = UnavailablePeriod::input(UnavailablePeriod::guest);
+    hotel.registerGuestInRoom(n, UP);
 }
 
 void InteractiveHotel::printFreeRoomsInputAndRun() {
-    hotel.printFreeRoomsForDate(Date::getDate());
+    Date date = Date::getDate();
+    hotel.printFreeRoomsForDate(date);
 }
 
 void InteractiveHotel::freeRoomInputAndRun() {
-    hotel.freeRoom(getNumber());
+    int n = getNumber();
+    hotel.freeRoom(n);
 }
 
 void InteractiveHotel::busyEnquiryInputAndRun() {
-    hotel.busyEnquiry(Date::getDate(), Date::getDate());
+    Date begin = Date::getDate();
+    Date end = Date::getDate();
+    hotel.busyEnquiry(begin, end);
 }
 
 void InteractiveHotel::findRoomInputAndRun() {
-    hotel.findRoom(Date::getDate());
+    Date date = Date::getDate();
+    hotel.findRoom(date);
 }
 
 void InteractiveHotel::closeRoomInputAndRun() {
-    hotel.closeRoom(getNumber(), UnavailablePeriod::input());
+    int n = getNumber();
+    UnavailablePeriod UP = UnavailablePeriod::input(UnavailablePeriod::construction);
+    hotel.closeRoom(n, UP);
 }
 
 void InteractiveHotel::doCommand(int command) {
@@ -115,7 +124,6 @@ void InteractiveHotel::run() {
         }
 
         out<<hotel<<'\n';
-
         out.close();
     }
 }

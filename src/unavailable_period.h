@@ -6,12 +6,13 @@
 #include "vector.h"
 
 class UnavailablePeriod {
-private:
+public: 
     enum UnavailableTypes {
         guest = 0, 
         construction = 1
     };
 
+private:
     Date begin, end;
 
     MyVector<char> customerName;
@@ -20,6 +21,7 @@ private:
     UnavailableTypes type;
 
 public:
+
     UnavailablePeriod();
     bool aroundDate(const Date& date) const; //проверява дали дадена дата е в интервала на текущата заявка
     bool intersectWith(const UnavailablePeriod& date) const; //проверява дали текущата заявка се засича с друга
@@ -34,7 +36,7 @@ public:
 
     bool isConstruction(); //проеверява дали типа на завката е ремонт
 
-    static UnavailablePeriod input(); 
+    static UnavailablePeriod input(const UnavailableTypes& type); 
     
     friend std::istream& operator>>(std::istream& in, UnavailablePeriod &unavailable);
     friend std::ostream& operator<<(std::ostream& out, const UnavailablePeriod &unavailable);

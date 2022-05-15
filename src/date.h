@@ -31,5 +31,5 @@ public:
 
     static Date getDate(); //взема дата от потребителя
 
-    char* toString() const; //превръща дата в стринг
+    void toString(char str[]) const; //превръща дата в стринг
 };

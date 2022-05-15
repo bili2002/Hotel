@@ -17,20 +17,18 @@ Room& Hotel::findRoomWithNumber(int number) {
 }
 
 void Hotel::registerGuestInRoom(int number, const UnavailablePeriod& reg) {
-    Room room;
     try {
-        room = findRoomWithNumber(number);
+        Room &room = findRoomWithNumber(number);
+        try {
+            room.registerRoom(reg);
+        }
+        catch (std::invalid_argument& e) {
+            std::cerr << e.what() << std::endl;
+        }
     }
     catch (std::invalid_argument& e) {
         std::cerr << e.what() << std::endl;
         return;
-    }
-
-    try {
-        room.registerRoom(reg);
-    }
-    catch (std::invalid_argument& e) {
-        std::cerr << e.what() << std::endl;
     }
 }
 
@@ -44,16 +42,14 @@ void Hotel::printFreeRoomsForDate(const Date& date) {
 }
 
 void Hotel::freeRoom(int number) {
-    Room room;
     try {
-        room = findRoomWithNumber(number);
+        Room& room = findRoomWithNumber(number);
+        room.freeRoom();
     }
     catch (std::invalid_argument& e) {
         std::cerr << e.what() << std::endl;
         return;
     }
-
-    room.freeRoom();
 }
 
 void Hotel::busyEnquiry(const Date& begin, const Date& end) {
@@ -62,17 +58,25 @@ void Hotel::busyEnquiry(const Date& begin, const Date& end) {
         return;
     }
 
-    char *filename = nullptr;
+    char filename[30];
     strcpy(filename, "report-");
-    strcpy(filename, begin.toString());
+    begin.toString(filename);
+    strcat(filename, ".txt");
 
-    std::ofstream out("filename.txt", std::ios::out);
+    std::ofstream out(filename, std::ios::out | std::ios::trunc);
+    if (!out.is_open()) {
+        std::cerr<<"The file isn't opened!\n";
+        return;
+    }
+
     for (auto& room : rooms) {
         int days = room.busyInPeriod(begin, end);
         if (days != 0) {
             out<<room.getNumber()<<' '<<days<<'\n';
         }
     }
+
+    out.close();    
 }
 
 void Hotel::findRoom(const Date& date) {
@@ -95,16 +99,14 @@ void Hotel::findRoom(const Date& date) {
 
 
 void Hotel::closeRoom(int number, const UnavailablePeriod& close) {
-    Room room;
     try {
-        room = findRoomWithNumber(number);
+        Room& room = findRoomWithNumber(number);
+        room.closeRoom(close);
     }
     catch (std::invalid_argument& e) {
         std::cerr << e.what() << std::endl;
         return;
     }
-
-    room.closeRoom(close);
 }
 
 std::istream& operator>>(std::istream& in, Hotel &hotel) {

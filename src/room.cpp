@@ -13,7 +13,7 @@ void Room::registerRoom(const UnavailablePeriod& reg) {
         }
     }
     
-    if (!intersecting)
+    if (!intersecting) 
         unavailable.push_back(reg);
     else 
         throw std::invalid_argument("The room is already taken for the period.");
@@ -76,9 +76,10 @@ void Room::freeRoom() {
     for (auto& curr : unavailable) {
         if (curr.aroundDate(Date::getCurrentDate())) {
             curr.freeEarlier(Date::getCurrentDate());
-            break;
-        }
+            return;
+        } 
     }
+    std::cerr<<"The room was not used today!\n";
 }
 
 int Room::getNumber() const {

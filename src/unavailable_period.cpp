@@ -40,7 +40,7 @@ bool UnavailablePeriod::isConstruction() {
     return type == construction;
 }
 
-UnavailablePeriod UnavailablePeriod::input() {
+UnavailablePeriod UnavailablePeriod::input(const UnavailableTypes& type) {
     UnavailablePeriod temp;
 
     temp.setBeginDate(Date::getDate());
@@ -51,13 +51,15 @@ UnavailablePeriod UnavailablePeriod::input() {
         return temp;
     }
     
-    std::cout<<"Enter name of the guest or input - if you want to leave it blank:\n";
-    std::cin>>temp.customerName;
+    if (type == guest) {
+        std::cout<<"Enter name of the guest or input - if you want to leave it blank:\n";
+        std::cin>>temp.customerName;
+    }
 
     std::cout<<"Enter note or input - if you want to leave it blank:\n";
-    std::cin>>temp.customerName;
+    std::cin>>temp.note;
 
-    temp.type = guest;
+    temp.type = type;
 
     return temp;
 }
